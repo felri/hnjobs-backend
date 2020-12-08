@@ -34,7 +34,7 @@ function formatDataHistory(arrayHistory) {
 }
 
 async function getHistoryLanguage(req, res) {
-  if (!req.body.language) {
+  if (!req.body.languages) {
     res.status(500).json({ error: 'no language' });
     return;
   }
@@ -47,40 +47,46 @@ async function getHistoryLanguage(req, res) {
     return;
   }
 
-  const resp = await Jobs.aggregate([
-    {
-      $match: {
-        $or: [
-          { year: { $gt: req.body.year } },
-          { month: { $gte: parseInt(req.body.month) } },
-        ],
-        languages: req.body.language,
+  let list = [];
+  for (let i = 0; i < req.body.languages.length; i++) {
+    const resp = await Jobs.aggregate([
+      {
+        $match: {
+          $or: [
+            { year: { $gt: req.body.year } },
+            { month: { $gte: parseInt(req.body.month) } },
+          ],
+          languages: req.body.languages[i],
+        },
       },
-    },
-    {
-      $group: {
-        _id: { month: '$month', year: '$year' },
-        count: { $sum: 1 },
-        language: { $first: req.body.language },
-        month: { $first: '$month' },
-        year: { $first: '$year' },
+      {
+        $group: {
+          _id: { month: '$month', year: '$year' },
+          count: { $sum: 1 },
+          language: { $first: req.body.languages[i] },
+          month: { $first: '$month' },
+          year: { $first: '$year' },
+        },
       },
-    },
-  ]).then(async (result) => {
-    const list = [];
-    for (let i = 0; i < result.length; i++) {
-      const countJobsInMonthYear = await Jobs.countDocuments({
-        month: result[i].month,
-        year: result[i].year,
-      });
-      list.push({
-        ...result[i],
-        percentage: Math.round((result[i].count / countJobsInMonthYear) * 100),
-      });
-    }
-    return list;
-  });
-  res.json(formatDataHistory(resp));
+    ]).then(async (result) => {
+      const list = [];
+      for (let i = 0; i < result.length; i++) {
+        const countJobsInMonthYear = await Jobs.countDocuments({
+          month: result[i].month,
+          year: result[i].year,
+        });
+        list.push({
+          ...result[i],
+          percentage: Math.round(
+            (result[i].count / countJobsInMonthYear) * 100
+          ),
+        });
+      }
+      return list;
+    });
+    list.push(formatDataHistory(resp));
+  }
+  res.json(list);
 }
 
 async function getJobsFromMonthLanguage(req, res) {
