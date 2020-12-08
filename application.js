@@ -7,7 +7,7 @@ const db = require('./src/models');
 
 require('dotenv').config();
 
-const HTTP_PORT = 3232;
+const HTTP_PORT = 3233;
 
 const bodyParser = require('body-parser');
 app.use(cors());
