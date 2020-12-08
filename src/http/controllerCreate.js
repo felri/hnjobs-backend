@@ -127,7 +127,7 @@ async function saveJobsAndTagsDb(jobsObj) {
       const jobs = new Jobs({ ...jobsObj[i] });
       await jobs.save(jobs);
     } catch (e) {
-      console.log(e);
+      console.log('could not save job in db, probably already exists');
     }
   }
   return;
@@ -154,6 +154,32 @@ async function createJobs(req, res) {
   }
 }
 
+//get who is hiring user
+//check the last submitted post from the user and check if the word hiring is in the title
+//run main to get new jobs
+async function getNewJobs() {
+  try {
+    const response = await fetch(
+      `${process.env.HACKER_NEWS_USER}whoishiring.json`
+    );
+    const data = await response.json();
+    for (let i = 0; i < data.submitted.length; i++) {
+      const r = await fetch(
+        `${process.env.HACKER_NEWS_URL}${data.submitted[i]}.json`
+      );
+      const d = await r.json();
+      if (d.title.includes('hiring')) {
+        main(data.submitted[i]);
+        return;
+      }
+    }
+  } catch (e) {
+    console.log(e);
+    console.log('could not get new jobs from whoishiring user');
+  }
+}
+
 module.exports = {
   createJobs,
+  getNewJobs,
 };

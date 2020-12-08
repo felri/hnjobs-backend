@@ -1,7 +1,10 @@
 const express = require('express');
 const router = require('./src/http/router.js');
+const controllerCreate = require('./src/http/controllerCreate.js');
+
 const app = express();
 const cors = require('cors');
+const schedule = require('node-schedule');
 
 const db = require('./src/models');
 
@@ -32,3 +35,8 @@ app.listen(HTTP_PORT, () => {
 });
 
 app.use('/', router);
+
+schedule.scheduleJob('0 12 * * *', function () {
+  console.log('Getting new jobs');
+  controllerCreate.getNewJobs();
+});

@@ -101,7 +101,9 @@ async function getJobsFromMonthLanguage(req, res) {
       languages: { $in: req.body.language },
     };
 
-  const resp = await Jobs.find(filters).then((result) => result);
+  const resp = await Jobs.find(filters)
+    .sort({ _id: -1 })
+    .then((result) => result);
   res.json(resp);
 }
 
