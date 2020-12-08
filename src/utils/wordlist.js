@@ -132,7 +132,7 @@ FRAMEWORKS = [
   },
   {
     name: 'React.js',
-    variations: ['React.js', 'React'],
+    variations: ['React.js', 'React', 'Reactjs', 'ReactJS'],
   },
   {
     name: 'Angular',
