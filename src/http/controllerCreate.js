@@ -146,11 +146,12 @@ async function main(threadId) {
 }
 
 async function createJobs(req, res) {
-  if (req.body.id) {
-    const resp = await main(req.body.id);
-    res.json(resp);
-  } else {
-    res.status(400).json({ error: 'no id' });
+  for (let i = 0; i < req.body.list.length; i++) {
+    if (req.body.list[i]) {
+      await main(req.body.list[i]);
+    } else {
+      res.status(400).json({ error: 'no id' });
+    }
   }
 }
 
