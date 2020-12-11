@@ -112,7 +112,6 @@ async function getJobsFromMonthLanguage(req, res) {
         languages: f.languages,
       }));
     });
-  console.log(resp);
   res.json(resp);
 }
 
