@@ -103,7 +103,16 @@ async function getJobsFromMonthLanguage(req, res) {
 
   const resp = await Jobs.find(filters)
     .sort({ _id: -1 })
-    .then((result) => result);
+    .then((result) => {
+      return result.map((f) => ({
+        by: f.by,
+        month: f.month,
+        year: f.year,
+        text: f.text,
+        languages: f.languages,
+      }));
+    });
+  console.log(resp);
   res.json(resp);
 }
 
