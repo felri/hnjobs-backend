@@ -57,7 +57,7 @@ LANGUAGES = [
   },
   {
     name: 'Go',
-    variations: ['Go'],
+    variations: ['Go', 'Golang'],
   },
   {
     name: 'Kotlin',
